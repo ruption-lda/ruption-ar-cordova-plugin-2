@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    id="com.ruption.ar.ruptionarplugin"
+    version="1.0.0">
+
+    <name>Augmented Reality - Ruption AR SDK Plugin</name>
+    
+    <author>Ruption Lda</author>
+    <keywords>AR,augmented reality,Ruption,surface recognition</keywords>
+
+    <description>
+        The Ruption AR Plugin enables developers to embed an augmented reality view into their Cordova project. You can create a fully featured app with advanced augmented reality features using HTML, CSS and JavaScript.
+    </description>
+
+    <repo>https://github.com/ndilokelwa-disrupting/ruption-AR-plugin.git</repo>
+
+    <license>(c) 2021 Ruption Lda - see License for details of the license</license>
+    
+    
+    <engines>
+      <engine name="cordova" version=">=3.0.0" />
+      <engine name="cordova-android" version=">=6.3.0"/>
+    </engines>
+
+    <!-- copy WikitudePlugin wrapper file into www-folder -->
+    <js-module src="www/RuptionARPlugin.js" name="RuptionARPlugin">
+        <clobbers target="RuptionARPlugin" />
+    </js-module>
+
+    <!-- android -->
+    <platform name="android">
+
+        <!-- declare implementation of WikitudePlugin -->
+        <source-file src="src/android/RuptionARPlugin.java" target-dir="src/com/ruption/ar" />
+
+        <!-- copy wikitude sdk -->
+        <lib-file src="src/android/ruptionarsdk.aar"/>
+
+        <!-- copy build extras, necessary for wikitude.aar -->
+        <framework src="src/android/build-extras.gradle" custom="true" type="gradleReference" />
+
+        <!-- add permissions and requirements -->
+        <config-file target="AndroidManifest.xml" parent="/manifest">
+            <uses-permission android:name="android.permission.INTERNET" />
+            <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+            <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+            <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
+            <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+            <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+            <uses-permission android:name="android.permission.ACCESS_GPS" />
+            <uses-permission android:name="android.permission.CAMERA" />
+            <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+            <uses-feature android:glEsVersion="0x00020000" android:required="true" />
+            <uses-feature android:name="android.hardware.camera" android:required="true" />
+            <uses-feature android:name="android.hardware.location" android:required="true" />
+            <uses-feature android:name="android.hardware.sensor.accelerometer" android:required="true" />
+            <uses-feature android:name="android.hardware.sensor.compass" android:required="true" />
+        </config-file>
+        
+        <!-- adds MediaPlayerActivity, required for startVideo feature-->
+        <config-file target="AndroidManifest.xml" parent="/manifest/application">
+            <activity android:name="com.ruption.tools.activities.MediaPlayerActivity" android:screenOrientation="landscape">
+                <intent-filter>
+                    <action android:name="android.intent.action.VIEW" />
+                    <category android:name="android.intent.category.DEFAULT" />
+                </intent-filter>
+            </activity>
+            <meta-data android:name="com.google.ar.core" android:value="optional" />
+        </config-file>
+
+        <!-- adds WikitudePlugin in project's config.xml -->
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="RuptionARPlugin">
+                <param name="android-package" value="com.ruption.ar.RuptionARPlugin"/>
+            </feature>
+        </config-file>
+
+
+        <!-- visible after installation -->
+        <info>
+            Have fun using ruption's augmented reality plugin for Cordova. Visit https://www.ruption.pt/RuptionARPlugin/doc/documentation/ for detailed documentation for the plugin.
+            
+            Make sure that you enter your Ruption AR SDK trial license key in `RuptionARPlugin.js` line 12. If you havent bought a license please visit http://www.ruption.pt/RuptionARPlugin.
+            
+            If you want to contribute to the open source project, please visit us at GitHub, http://github.com/ndilokelwa-disrupting
+        </info>
+
+        
+
+    </platform>
+
+    <!-- iOS --> <!--
+    <platform name="ios">
+                
+                
+        <!-- WikitudePlugin Source --
+        <header-file src="src/ios/WTWikitudePlugin.h" />
+        <source-file src="src/ios/WTWikitudePlugin.m" />
+
+        <header-file src="src/ios/WTARViewController.h" />
+        <source-file src="src/ios/WTARViewController.m" />
+
+        <framework src="src/ios/WikitudeSDK.xcframework" custom="true" embed="true" />
+
+
+        <!-- Additional WikitudePlugin libraries and frameworks --
+        <framework src="Accelerate.framework" />
+        <framework src="AssetsLibrary.framework" />
+        <framework src="AVFoundation.framework" />
+        <framework src="AVKit.framework" />
+        <framework src="CFNetwork.framework" />
+        <framework src="CoreGraphics.framework" />
+        <framework src="CoreLocation.framework" />
+        <framework src="CoreMedia.framework" />
+        <framework src="CoreMotion.framework" />
+        <framework src="CoreText.framework" />
+        <framework src="CoreVideo.framework" />
+        <framework src="Foundation.framework" />
+        <framework src="MediaPlayer.framework" />
+        <framework src="OpenGLES.framework" />
+        <framework src="Photos.framework" />
+        <framework src="QuartzCore.framework" />
+        <framework src="SafariServices.framework" />
+        <framework src="Security.framework" />
+        <framework src="SystemConfiguration.framework" />
+        <framework src="UIKit.framework" />  
+        <framework src="libc++.dylib" />
+        <framework src="libz.dylib" />
+        
+
+        <!-- Adopts project's config.xml to include the WikitudePlugin and domain white-lists --
+        <config-file target="config.xml" parent="/*">
+            <feature name="WikitudePlugin">
+                <param name="ios-package" value="WTWikitudePlugin"/>
+            </feature>
+        </config-file>
+
+        <!-- visible after installation --
+        <info>
+            Have fun using world's first augmented reality plugin for Cordova. Visit https://www.wikitude.com/external/doc/documentation/latest/phonegap/ for detailed documentation for the plugin.
+            
+            Make sure that you enter your Wikitude SDK trial license key in `WikitudePlugin.js` line 12. If you havent bought a license please visit http://www.wikitude.com/store.
+            
+            If you want to contribute to the open source project, please visit us at GitHub, http://github.com/Wikitude
+        </info>
+        
+    </platform>    -->
+    
+</plugin>
