@@ -13,7 +13,7 @@
         The Ruption AR Plugin enables developers to embed an augmented reality view into their Cordova project. You can create a fully featured app with advanced augmented reality features using HTML, CSS and JavaScript.
     </description>
 
-    <repo>https://github.com/ndilokelwa-disrupting/ruption-AR-plugin.git</repo>
+    <repo>https://github.com/ruption-lda/cordova-ruption-ar-plugin.git</repo>
 
     <license>(c) 2021 Ruption Lda - see License for details of the license</license>
     

@@ -1,26 +1,22 @@
 {
-  "name": "com.wikitude.phonegap.wikitudeplugin",
-  "version": "9.9.0",
-  "description": "Augmented Reality Wikitude SDK Plugin \n        The Wikitude Cordova Plugin enables developers to embed an augmented reality view into their Cordova project. You can create a fully featured app with advanced augmented reality features, including image recognition, object recognition purely using HTML, CSS and JavaScript.\n    ",
+  "name": "com.ruption.ar.ruptionarplugin",
+  "version": "1.0.0",
+  "description": "Augmented Reality Ruption AR SDK Plugin \n        The Ruption AR Cordova Plugin enables developers to embed an augmented reality view into their Cordova project. You can create a fully featured app with advanced augmented reality features purely using HTML, CSS and JavaScript.\n    ",
   "cordova": {
     "id": "",
     "platforms": [
-      "android",
-      "ios"
+      "android"
     ]
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Wikitude/wikitude-phonegap.git"
+    "url": "git+https://github.com/ruption-lda/cordova-ruption-ar-plugin.git"
   },
   "keywords": [
     "AR",
     "augmented reality",
-    "Wikitude",
-    "image recognition",
-    "object recognition",
-    "markerless tracking",
-    "cloud recognition",
+    "Ruption",
+    "surface tracking",
     "ecosystem:cordova",
     "cordova-android",
     "cordova-ios"
@@ -31,10 +27,10 @@
       "version": ">=3.0.0"
     }
   ],
-  "author": "Wikitude GmbH",
-  "license": "(c) 2016 - 2021 Wikitude GmbH - see License.md for details of the license",
+  "author": "Ruption Lda",
+  "license": "(c) 2021 Ruption Lda - see License for details of the license",
   "bugs": {
-    "url": "https://github.com/Wikitude/wikitude-phonegap/issues"
+    "url": "https://github.com/ruption-lda/cordova-ruption-ar-plugin/issues"
   },
-  "homepage": "https://github.com/Wikitude/wikitude-phonegap#readme"
+  "homepage": "https://github.com/ruption-lda/cordova-ruption-ar-plugin#readme"
 }
