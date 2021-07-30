@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ruption-lda/cordova-ruption-ar-plugin.git"
+    "url": "git+https://github.com/ruption-lda/ruption-ar-cordova-plugin.git"
   },
   "keywords": [
     "AR",
@@ -30,7 +30,7 @@
   "author": "Ruption Lda",
   "license": "(c) 2021 Ruption Lda - see License for details of the license",
   "bugs": {
-    "url": "https://github.com/ruption-lda/cordova-ruption-ar-plugin/issues"
+    "url": "https://github.com/ruption-lda/ruption-ar-cordova-plugin/issues"
   },
-  "homepage": "https://github.com/ruption-lda/cordova-ruption-ar-plugin#readme"
+  "homepage": "https://github.com/ruption-lda/ruption-ar-cordova-plugin#readme"
 }

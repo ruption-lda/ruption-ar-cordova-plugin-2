@@ -23,7 +23,7 @@
       <engine name="cordova-android" version=">=6.3.0"/>
     </engines>
 
-    <!-- copy WikitudePlugin wrapper file into www-folder -->
+    <!-- copy RuptionARPlugin wrapper file into www-folder -->
     <js-module src="www/RuptionARPlugin.js" name="RuptionARPlugin">
         <clobbers target="RuptionARPlugin" />
     </js-module>
@@ -31,13 +31,13 @@
     <!-- android -->
     <platform name="android">
 
-        <!-- declare implementation of WikitudePlugin -->
+        <!-- declare implementation of RuptionARPlugin -->
         <source-file src="src/android/RuptionARPlugin.java" target-dir="src/com/ruption/ar" />
 
-        <!-- copy wikitude sdk -->
-        <lib-file src="src/android/ruptionarsdk.aar"/>
+        <!-- copy google arcore sdk -->
+        <lib-file src="src/android/googlearcoresdk.aar"/>
 
-        <!-- copy build extras, necessary for wikitude.aar -->
+        <!-- copy build extras, necessary for googlearcoresdk.aar -->
         <framework src="src/android/build-extras.gradle" custom="true" type="gradleReference" />
 
         <!-- add permissions and requirements -->
@@ -58,9 +58,9 @@
             <uses-feature android:name="android.hardware.sensor.compass" android:required="true" />
         </config-file>
         
-        <!-- adds MediaPlayerActivity, required for startVideo feature-->
+        <!-- adds HelloARActivity -->
         <config-file target="AndroidManifest.xml" parent="/manifest/application">
-            <activity android:name="com.ruption.tools.activities.MediaPlayerActivity" android:screenOrientation="landscape">
+            <activity android:name="com.google.ar.core.examples.java.helloar.HelloArActivity" android:screenOrientation="landscape">
                 <intent-filter>
                     <action android:name="android.intent.action.VIEW" />
                     <category android:name="android.intent.category.DEFAULT" />
@@ -69,7 +69,7 @@
             <meta-data android:name="com.google.ar.core" android:value="optional" />
         </config-file>
 
-        <!-- adds WikitudePlugin in project's config.xml -->
+        <!-- adds RuptionARPlugin in project's config.xml -->
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="RuptionARPlugin">
                 <param name="android-package" value="com.ruption.ar.RuptionARPlugin"/>
