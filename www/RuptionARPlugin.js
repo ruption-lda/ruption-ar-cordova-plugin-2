@@ -3,24 +3,8 @@
 	 * Release date: January 2, 2017
 	 */
 
-	var WikitudePlugin = function() {
+	var RuptionARPlugin = function() {
 
-		/**
-		 *  This is the SDK Key, provided to you after you purchased the Wikitude SDK from http =//www.wikitude.com/store/.
-		 *  You can obtain a free trial key at http =//www.wikitude.com/developer/licenses .
-		 */
-
-		this._sdkKey = "ocXrDnNL63YZ3D9stkVJqhjJCRxae9/u6VloJzq6bRVRe0jXVWyoUXqYx9XfbaR8FySVsGdfKlrKLi0tBQGHlEdb3KHFMNTebbuSKBj8TMn5qWQ7cW/cWISE94cXCygk68Ot1/vtd+pSfWNtebHFczOmj3UrKQYuMa3spV5mOXFTYWx0ZWRfX8MyKSsak5BT4B/6nK0DSzrq3xMeD/4xDAPsqxMIcPnJJlV5H3xZbC/CwbO1MARyfhsgOmVLzV58Mzw0o9iRq71Q4netMGq17+VJ8Qj03QMZfqNzhIMOdHYLfP0C+hUXaMCSrGGwfIzldGEg7+DTfESdM254oNPN64b2MD1R10Rj1CyLJKvY3iG/WmUw22FHgmBR2bcr6KXZvUc8tRZ80OVRudwZIGSimkdp+6CzmCM13zUh9fXRgszjwi0RW/yDB4LmHDY/QOZGKFvsvmR+l/w2nHSz2lz6aRF6H3msz1gx5OZCMat1pXq4+toIXlFcZl1OnDjarctcBesTOLBuiMPbZZfYsrqYch4vx18/P+DfgdBDIekIwj5ViA40tz7xZQZIVW053jBdlriLlUjr7jb0U68/f5fChQdzODOP1xHVU7UZsVZwDdHvqrMKHUSEDhc1qcMpmA83SDFravFLGqzNhDNSy761yQ2vs62N3dSCYGRRmmU+m/MGZNOFixlwcbQI7TfbPaqkIlrVfW+GNJo/p/MWVrUjZUDV2Ugm/V6kjN/uG1Wu1tC33d+WhtmttxgtJJ07QXqRhrMwjI9pV7zl0vQKiRbSsq/L15qL1T6BVcEE5I2vc9+JX7g0YY6hynSqockNrM4vOazNCrrkDOQ7t0ZERwgeZXK75uHa5HVCzc2LA+qPsQ8=";
-		/**
-		 *  The Wikitude SDK can run in different modes.
-		 *      * Geo means, that objects are placed at latitude/longitude positions.
-		 *      * ImageTracking means that only image recognition is used in the ARchitect World.
-		 *  When your ARchitect World uses both, geo and ir, than set this value to "IrAndGeo". Otherwise, if the ARchitectWorld only needs image recognition, placing "IR" will require less features from the device and therefore, support a wider range of devices. Keep in mind that image recognition requires a dual core cpu to work satisfyingly.
-		 */
-        this.FeatureGeo             = "geo";
-        this.FeatureImageTracking   = "image_tracking";
-        this.FeatureInstantTracking = "instant_tracking";
-        this.FeatureObjectTracking  = "object_tracking";
 
         /**
          *  Start-up configuration: camera position (front or back).
@@ -48,18 +32,6 @@
 
 	/* Managing ARchitect world loading */
 
-	/**
-	 *  Use this function to check if the current device is capable of running ARchitect Worlds.
-	 *
-	 * @param {function} successCallback A callback which is called if the device is capable of running ARchitect Worlds.
-	 * @param {function} errorCallback A callback which is called if the device is not capable of running ARchitect Worlds.
-	 */
-	WikitudePlugin.prototype.isDeviceSupported = function(successCallback, errorCallback, requiredFeatures) {
-
-		// Check if the current device is capable of running Architect Worlds
-		cordova.exec(successCallback, errorCallback, "WikitudePlugin", "isDeviceSupported", [requiredFeatures]);
-	};
-
     /**
      * Use this function to request access to restricted APIs like the camera, gps or photo library.
      *
@@ -67,8 +39,8 @@
      * @param {function} errorCallback A callback which is called if one or more permissions are not granted.
      * @param {function} requiredFeatures An array of strings describing which features of the Wikitude SDK are used so that the plugin can request access to those restricted APIs.
      */
-    WikitudePlugin.prototype.requestAccess = function(successCallback, errorCallback, requiredFeatures) {
-        cordova.exec(successCallback, errorCallback, "WikitudePlugin", "requestAccess", [requiredFeatures]);
+    WikitudePlugin.prototype.requestAccess = function(successCallback, errorCallback) {
+        cordova.exec(successCallback, errorCallback, "RuptionARPlugin", "requestAccess", []);
     };
 
 	/**
@@ -88,17 +60,12 @@
 	 *                                      	}
 	 *                               	}
 	 */
-	WikitudePlugin.prototype.loadARchitectWorld = function(successCallback, errorCallback, architectWorldPath, requiredFeatures, startupConfiguration) {
+	WikitudePlugin.prototype.loadWorld = function(successCallback, errorCallback, architectWorldPath, requiredFeatures, startupConfiguration) {
 
-		cordova.exec(successCallback, errorCallback, "WikitudePlugin", "open", [{
-			"SDKKey": this._sdkKey,
-			"ARchitectWorldURL": architectWorldPath,
-			"RequiredFeatures": requiredFeatures,
-		    "StartupConfiguration" : startupConfiguration
-		}]);
+		cordova.exec(successCallback, errorCallback, "RuptionARPlugin", "open", []);
 
 		if (this.customBackButtonCallback == null) {
-            cordova.exec(this.onBackButton, this.onWikitudeError, "WikitudePlugin", "setBackButtonCallback", []);
+            cordova.exec(this.onBackButton, this.onRuptionARError, "WikitudePlugin", "setBackButtonCallback", []);
 		}
 
 		// We add an event listener on the resume and pause event of the application life-cycle
@@ -330,12 +297,12 @@
 	/**
 	 *	A generic success callback used inside this wrapper.
 	 */
-	WikitudePlugin.prototype.onWikitudeOK = function() {};
+	WikitudePlugin.prototype.onRuptionAROK = function() {};
 
 	/**
 	 *  A generic error callback used inside this wrapper.
 	 */
-	WikitudePlugin.prototype.onWikitudeError = function() {};
+	WikitudePlugin.prototype.onRuptionARError = function() {};
 
 
 

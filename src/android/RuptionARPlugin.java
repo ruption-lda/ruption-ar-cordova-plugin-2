@@ -128,7 +128,6 @@ public class RuptionARPlugin extends CordovaPlugin {
     /**
      * opens architect-view (add to view stack)
      */
-    private static final String	ACTION_IS_DEVICE_SUPPORTED	= "isDeviceSupported";
 
     private static final String ACTION_REQUEST_ACCESS   = "requestAccess";
 
@@ -370,7 +369,6 @@ public class RuptionARPlugin extends CordovaPlugin {
         /* initial set-up, show ArchitectView full-screen in current screen/activity */
         if ( RuptionARPlugin.ACTION_OPEN.equals( action ) ) {
             this.openCallback = callContext;
-            this.openArgs = args;
 
             boolean cameraPermissionRequestRequired = !cordova.hasPermission(Manifest.permission.CAMERA);
             _locationPermissionRequestRequired = !cordova.hasPermission(Manifest.permission.ACCESS_FINE_LOCATION) && !cordova.hasPermission(Manifest.permission.ACCESS_COARSE_LOCATION);
