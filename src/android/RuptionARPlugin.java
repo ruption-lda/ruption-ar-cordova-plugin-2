@@ -63,7 +63,7 @@ import com.google.ar.core.examples.java.helloar.HelloArActivity;
  * This plug-in is written under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.html
  */
-public class WikitudePlugin extends CordovaPlugin implements ArchitectJavaScriptInterfaceListener, ArchitectWorldLoadedListener {
+public class RuptionARPlugin extends CordovaPlugin {
 
     /** PhoneGap-root to Android-app-assets folder ; e.g. use "assets/foo.html" as source if you want to load foo.html from your android-project's assets-folder */
     private static final String	LOCAL_ASSETS_PATH_ROOT		= "assets/";
@@ -81,12 +81,12 @@ public class WikitudePlugin extends CordovaPlugin implements ArchitectJavaScript
     private static final String	ACTION_CLOSE				= "close";
 
     /**
-     * set visibility of architectView to visible (of present)
+     * set visibility of helloARRuption to visible (of present)
      */
     private static final String	ACTION_SHOW					= "show";
 
     /**
-     * set visibility of architectView to invisible (of present)
+     * set visibility of helloARRuption to invisible (of present)
      */
     private static final String	ACTION_HIDE					= "hide";
 
@@ -165,7 +165,7 @@ public class WikitudePlugin extends CordovaPlugin implements ArchitectJavaScript
     /**
      * the Wikitude ARchitectview
      */
-    private ArchitectViewPhoneGap		architectView;
+    private HelloARRuption		helloARRuption;
 
     /**
      * callback-Id of sendJSONObject method
@@ -201,7 +201,7 @@ public class WikitudePlugin extends CordovaPlugin implements ArchitectJavaScript
 
 
     /**
-     * location listener receives location updates and must forward them to the architectView
+     * location listener receives location updates and must forward them to the helloARRuption
      */
     protected LocationListener locationListener;
 
@@ -222,56 +222,37 @@ public class WikitudePlugin extends CordovaPlugin implements ArchitectJavaScript
         this.action = action;
 
 		/* hide architect-view -> destroy and remove from activity */
-        if ( WikitudePlugin.ACTION_CLOSE.equals( action ) ) {
-            if ( this.architectView != null ) {
+        if ( RuptionARPlugin.ACTION_CLOSE.equals( action ) ) {
+            if ( this.helloARRuption != null ) {
                 this.cordova.getActivity().runOnUiThread( new Runnable() {
 
                     @Override
                     public void run() {
-                        if (WikitudePlugin.this.locationProvider != null) {
-                            WikitudePlugin.this.locationProvider.onPause();
+                        if (RuptionARPlugin.this.locationProvider != null) {
+                            RuptionARPlugin.this.locationProvider.onPause();
                         }
-                        removeArchitectView();
+                        removeHelloARActivity();
                     }
                 } );
-                callContext.success( action + ": architectView is present" );
+                callContext.success( action + ": helloARRuption is present" );
             }
             else {
-                callContext.error( action + ": architectView is not present" );
+                callContext.error( action + ": helloARRuption is not present" );
             }
             return true;
         }
 
 		/* return success only if view is opened (no matter if visible or not) */
-        if ( WikitudePlugin.ACTION_STATE_ISOPEN.equals( action ) ) {
-            if ( this.architectView != null ) {
-                callContext.success( action + ": architectView is present" );
+        if ( RuptionARPlugin.ACTION_STATE_ISOPEN.equals( action ) ) {
+            if ( this.helloARRuption != null ) {
+                callContext.success( action + ": helloARRuption is present" );
             } else {
-                callContext.error( action + ": architectView is not present" );
+                callContext.error( action + ": helloARRuption is not present" );
             }
             return true;
         }
 
-		/* return success only if view is opened (no matter if visible or not) */
-        if ( WikitudePlugin.ACTION_IS_DEVICE_SUPPORTED.equals( action ) ) {
-            JSONArray jsonArray = null;
-            try {
-                jsonArray = args.getJSONArray( 0 );
-            } catch (JSONException e) {
-            }
-            int featuresBitMap = convertArFeatures(jsonArray);
-
-            MissingDeviceFeatures missingDeviceFeatues = ArchitectView.isDeviceSupported( this.cordova.getActivity(), featuresBitMap );
-
-            if (missingDeviceFeatues.areFeaturesMissing()) {
-                callContext.error(missingDeviceFeatues.getMissingFeatureMessage());
-            } else {
-                callContext.success("This device is supported" );
-            }
-            return true;
-        }
-
-        if (WikitudePlugin.ACTION_CAPTURE_SCREEN.equals(action) )
+        if (RuptionARPlugin.ACTION_CAPTURE_SCREEN.equals(action) )
         {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q || this.cordova.hasPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 captureScreen(args, callContext);
@@ -285,90 +266,51 @@ public class WikitudePlugin extends CordovaPlugin implements ArchitectJavaScript
         }
 
 		/* life-cycle's RESUME */
-        if ( WikitudePlugin.ACTION_ON_RESUME.equals( action ) ) {
+        if ( RuptionARPlugin.ACTION_ON_RESUME.equals( action ) ) {
 
-            if ( this.architectView != null ) {
+            if ( this.helloARRuption != null ) {
                 this.cordova.getActivity().runOnUiThread( new Runnable() {
 
                     @Override
                     public void run() {
-                        WikitudePlugin.this.architectView.onResume();
-                        callContext.success( action + ": architectView is present" );
+                        RuptionARPlugin.this.helloARRuption.onResume();
+                        callContext.success( action + ": helloARRuption is present" );
                         if (locationProvider != null) {
                             locationProvider.onResume();
                         }
                     }
                 } );
 
-                // callContext.success( action + ": architectView is present" );
+                // callContext.success( action + ": helloARRuption is present" );
             } else {
-                callContext.error( action + ": architectView is not present" );
+                callContext.error( action + ": helloARRuption is not present" );
             }
             return true;
         }
 
 		/* life-cycle's PAUSE */
-        if ( WikitudePlugin.ACTION_ON_PAUSE.equals( action ) ) {
-            if ( architectView != null ) {
+        if ( RuptionARPlugin.ACTION_ON_PAUSE.equals( action ) ) {
+            if ( helloARRuption != null ) {
                 this.cordova.getActivity().runOnUiThread( new Runnable() {
 
                     @Override
                     public void run() {
-                        WikitudePlugin.this.architectView.onPause();
+                        RuptionARPlugin.this.helloARRuption.onPause();
                         if (locationProvider != null) {
                             locationProvider.onPause();
                         }
                     }
                 } );
 
-                callContext.success( action + ": architectView is present" );
+                callContext.success( action + ": helloARRuption is present" );
             } else {
-                callContext.error( action + ": architectView is not present" );
+                callContext.error( action + ": helloARRuption is not present" );
             }
             return true;
         }
 
-		/* set visibility to "visible", return error if view is null */
-        if ( WikitudePlugin.ACTION_SHOW.equals( action ) ) {
-
-            this.cordova.getActivity().runOnUiThread( new Runnable() {
-
-                @Override
-                public void run() {
-                    if ( architectView != null ) {
-                        architectView.setVisibility( View.VISIBLE );
-                        callContext.success( action + ": architectView is present" );
-                    } else {
-                        callContext.error( action + ": architectView is not present" );
-                    }
-                }
-            } );
-
-
-            return true;
-        }
-
-		/* set visibility to "invisible", return error if view is null */
-        if ( WikitudePlugin.ACTION_HIDE.equals( action ) ) {
-
-            this.cordova.getActivity().runOnUiThread( new Runnable() {
-
-                @Override
-                public void run() {
-                    if ( architectView != null ) {
-                        architectView.setVisibility( View.INVISIBLE );
-                        callContext.success( action + ": architectView is present" );
-                    } else {
-                        callContext.error( action + ": architectView is not present" );
-                    }
-                }
-            } );
-
-            return true;
-        }
-
         /* set a custom callback that is called when our plugin internally  */
-        if ( WikitudePlugin.ACTION_SET_BACK_BUTTON_CALLBACK.equals( action ) ) {
+        if ( RuptionARPlugin.ACTION_SET_BACK_BUTTON_CALLBACK.equals( action ) ) {
             this.onBackButtonCallback = callContext;
             final PluginResult result = new PluginResult( PluginResult.Status.NO_RESULT, action + ": registered back button callback");
             result.setKeepCallback(true);
@@ -377,7 +319,7 @@ public class WikitudePlugin extends CordovaPlugin implements ArchitectJavaScript
         }
 
         /* define call-back for url-invocations */
-        if ( WikitudePlugin.ACTION_ON_URLINVOKE.equals( action ) ) {
+        if ( RuptionARPlugin.ACTION_ON_URLINVOKE.equals( action ) ) {
             this.urlInvokeCallback = callContext;
             final PluginResult result = new PluginResult( PluginResult.Status.NO_RESULT, action + ": registered callback" );
             result.setKeepCallback( true );
@@ -386,7 +328,7 @@ public class WikitudePlugin extends CordovaPlugin implements ArchitectJavaScript
         }
 
         /* define call-back for AR.platform.sendJSONObject */
-        if ( WikitudePlugin.ACTION_ON_JSON_RECEIVED.equals( action ) ) {
+        if ( RuptionARPlugin.ACTION_ON_JSON_RECEIVED.equals( action ) ) {
             this.jsonObjectReceivedCallback = callContext;
             final PluginResult result = new PluginResult( PluginResult.Status.NO_RESULT, action + ": registered callback" );
             result.setKeepCallback( true );
@@ -394,84 +336,9 @@ public class WikitudePlugin extends CordovaPlugin implements ArchitectJavaScript
             return true;
         }
 
-		/* location update */
-        if ( WikitudePlugin.ACTION_SET_LOCATION.equals( action ) ) {
-            try {
-                final double lat = args.getDouble( 0 );
-                final double lon = args.getDouble( 1 );
-                float alt = Float.MIN_VALUE;
-                try {
-                    alt = (float)args.getDouble( 2 );
-                } catch ( Exception e ) {
-                    // invalid altitude -> ignore it
-                }
-                final float altitude = alt;
-                Double acc = null;
-                try {
-                    acc = args.getDouble( 3 );
-                } catch ( Exception e ) {
-                    // invalid accuracy -> ignore it
-                }
-                final Double accuracy = acc;
-                if ( this.cordova != null && this.cordova.getActivity() != null ) {
-                    this.useCustomLocation = true;
-                    cordova.getActivity().runOnUiThread(
-//						this.cordova.getThreadPool().execute(
-                            new Runnable() {
+		
 
-                                @Override
-                                public void run() {
-                                    if ( WikitudePlugin.this.architectView != null ) {
-                                        if ( accuracy != null ) {
-                                            WikitudePlugin.this.architectView.setLocation( lat, lon, altitude, accuracy.floatValue() );
-                                        } else {
-                                            WikitudePlugin.this.architectView.setLocation( lat, lon, altitude );
-                                        }
-                                        callContext.success( action + ": updated location" );
-                                    } else {
-                                        /* return error if there is no architect-view active*/
-                                        callContext.error( action + ": architectView is not present" );
-                                    }
-                                }
-                            } );
-                }
-
-            } catch ( Exception e ) {
-                callContext.error( action + ": exception thrown, " + e != null ? e.getMessage() : "(exception is NULL)" );
-                return true;
-            }
-            return true;
-        }
-
-        if ( WikitudePlugin.ACTION_CALL_JAVASCRIPT.equals( action ) ) {
-
-            String logMsg = null;
-            try {
-                final String callJS = args.getString( 0 );
-                logMsg = callJS;
-
-                this.cordova.getActivity().runOnUiThread( new Runnable() {
-
-                    @Override
-                    public void run() {
-                        if ( architectView != null ) {
-                            WikitudePlugin.this.architectView.callJavascript( callJS );
-                        } else {
-                            callContext.error( action + ": architectView is not present" );
-                        }
-                    }
-                } );
-
-            } catch ( JSONException je ) {
-                callContext.error( action + ": exception thrown, " + je != null ? je.getMessage() : "(exception is NULL)" );
-                return true;
-            }
-            callContext.success( action + ": called js, '" + logMsg + "'" );
-
-            return true;
-        }
-
-        if ( WikitudePlugin.ACTION_REQUEST_ACCESS.equals( action ) ) {
+        if ( RuptionARPlugin.ACTION_REQUEST_ACCESS.equals( action ) ) {
             requestAccessCallback = callContext;
             JSONArray jsonArray = null;
             try {
@@ -501,18 +368,9 @@ public class WikitudePlugin extends CordovaPlugin implements ArchitectJavaScript
 
 
         /* initial set-up, show ArchitectView full-screen in current screen/activity */
-        if ( WikitudePlugin.ACTION_OPEN.equals( action ) ) {
+        if ( RuptionARPlugin.ACTION_OPEN.equals( action ) ) {
             this.openCallback = callContext;
             this.openArgs = args;
-
-            int features = 0;
-            try {
-                final JSONObject params = this.openArgs.getJSONObject( 0 );
-                final JSONArray jsonArray = params.getJSONArray("RequiredFeatures");
-                features = convertArFeatures(jsonArray);
-            } catch (JSONException e) {
-                features = ArchitectStartupConfiguration.Features.Geo | ArchitectStartupConfiguration.Features.ImageTracking | ArchitectStartupConfiguration.Features.InstantTracking;
-            }
 
             boolean cameraPermissionRequestRequired = !cordova.hasPermission(Manifest.permission.CAMERA);
             _locationPermissionRequestRequired = !cordova.hasPermission(Manifest.permission.ACCESS_FINE_LOCATION) && !cordova.hasPermission(Manifest.permission.ACCESS_COARSE_LOCATION);
@@ -527,22 +385,22 @@ public class WikitudePlugin extends CordovaPlugin implements ArchitectJavaScript
                 _cameraPermissionGranted = true;
                 this.cordova.requestPermissions(this, CAMERA_PERMISSION_REQUEST_CODE, new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION});
             } else {
-                loadArchitectWorld();
+                loadWorld();
             }
             return true;
         }
 
-        if ( WikitudePlugin.GET_SDK_BUILD_INFORMATION.equals( action ) ) {
+        if ( RuptionARPlugin.GET_SDK_BUILD_INFORMATION.equals( action ) ) {
             callContext.success(ArchitectView.getSDKBuildInformation().toJSONString());
             return true;
         }
 
-        if ( WikitudePlugin.GET_SDK_VERSION.equals( action ) ) {
+        if ( RuptionARPlugin.GET_SDK_VERSION.equals( action ) ) {
             callContext.success(ArchitectView.getSDKVersion());
             return true;
         }
 
-        if ( WikitudePlugin.ACTION_OPEN_APP_SETTINGS.equals( action ) ) {
+        if ( RuptionARPlugin.ACTION_OPEN_APP_SETTINGS.equals( action ) ) {
             final Intent i = new Intent();
             i.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
             i.addCategory(Intent.CATEGORY_DEFAULT);
@@ -554,7 +412,7 @@ public class WikitudePlugin extends CordovaPlugin implements ArchitectJavaScript
             return true;
         }
 
-        if ( WikitudePlugin.ACTION_SHOW_ALERT.equals( action ) ) {
+        if ( RuptionARPlugin.ACTION_SHOW_ALERT.equals( action ) ) {
             try {
                 final String alertString = args.getString( 0 );
                 AlertDialog.Builder builder = new AlertDialog.Builder(cordova.getActivity());
@@ -577,59 +435,16 @@ public class WikitudePlugin extends CordovaPlugin implements ArchitectJavaScript
         return false;
     }
 
-    private void loadArchitectWorld() {
+    private void loadWorld() {
         PluginResult result = null;
         try {
-            final JSONObject params = this.openArgs.getJSONObject(0);
-            final String apiKey = params.getString("SDKKey");
-            String tempFilePath = params.getString("ARchitectWorldURL");
-
-
-            String stringResourceClassName = cordova.getActivity().getPackageName() + ".R$string";
-            Class<?> c = Class.forName(stringResourceClassName);
-            Field[] fields = c.getFields();
-
-            int stringPrefixIndex = -1;
-            for (Field field: fields) {
-                if (field.getName().equals(LOCAL_PATH_PREFIX_KEY)) {
-                    stringPrefixIndex = field.getInt(null);
-                }
-            }
-
-            if ( stringPrefixIndex != -1 ) {
-                String stringPrefix = this.cordova.getActivity().getResources().getString(stringPrefixIndex);
-                if ( stringPrefix.length() > 0 ) {
-                    int wwwIndex = tempFilePath.indexOf("www");
-                    if ( wwwIndex > 0 ) {
-                        tempFilePath= new StringBuffer(tempFilePath).insert(wwwIndex, stringPrefix+"/").toString();
-                    }
-                }
-            }
-            final String filePath = tempFilePath;
-
-            int featuresTemp = 0;
-            try {
-                final JSONArray jsonArray = params.getJSONArray( "RequiredFeatures" );
-                featuresTemp = convertArFeatures(jsonArray);
-            } catch (JSONException e) {
-                featuresTemp = ArchitectStartupConfiguration.Features.Geo | ArchitectStartupConfiguration.Features.ImageTracking | ArchitectStartupConfiguration.Features.InstantTracking;
-            }
-            final int features = featuresTemp;
-
-            JSONObject startupConfigurationTmp;
-            try {
-                startupConfigurationTmp = params.getJSONObject( "StartupConfiguration" );
-            } catch (Exception e) {
-                startupConfigurationTmp = null;
-            }
-            final JSONObject startupConfiguration = startupConfigurationTmp;
 
             this.cordova.getActivity().runOnUiThread( new Runnable() {
 
                 @Override
                 public void run() {
                     try {
-                        WikitudePlugin.this.addArchitectView( apiKey, filePath, features, startupConfiguration );
+                        RuptionARPlugin.this.addArchitectView( apiKey, filePath, features, startupConfiguration );
                     } catch ( Exception e ) {
 							/* in case "addArchitectView" threw an exception -> notify callback method asynchronously */
                         openCallback.error( e != null ? e.getMessage() : "Exception is 'null'" );
@@ -692,27 +507,15 @@ public class WikitudePlugin extends CordovaPlugin implements ArchitectJavaScript
      * hides/removes ARchitect-View completely
      * @return true if successful, false otherwise
      */
-    private boolean removeArchitectView() {
-        if ( this.architectView != null ) {
+    private boolean removeHelloARActivity() {
+        if ( this.helloARRuption != null ) {
 
 			/* fake life-cycle calls, because activity is already up and running */
-            this.architectView.onPause();
-            this.architectView.onDestroy();
+            this.helloARRuption.onPause();
+            this.helloARRuption.onDestroy();
 
-            // clean-up used temp-directory
-            try {
-                WikitudePlugin.clearCacheFolder( new File( ArchitectView.getCacheDirectoryAbsoluteFilePath( this.cordova.getActivity() ) ), 0 );
-            } catch ( Exception e ) {
-                // had troubles in clearing files from cache
-                e.printStackTrace();
-            }
-
-            this.architectView.setVisibility( View.GONE );
-            ((ViewManager)this.architectView.getParent()).removeView( this.architectView );
-            this.architectView = null;
-
-            WikitudePlugin.handleResumeInCordovaWebView(cordova.getActivity().getWindow().getDecorView().findViewById(android.R.id.content));
-            WikitudePlugin.releaseFocusInCordovaWebView(cordova.getActivity().getWindow().getDecorView().findViewById(android.R.id.content));
+            RuptionARPlugin.handleResumeInCordovaWebView(cordova.getActivity().getWindow().getDecorView().findViewById(android.R.id.content));
+            RuptionARPlugin.releaseFocusInCordovaWebView(cordova.getActivity().getWindow().getDecorView().findViewById(android.R.id.content));
 
             return true;
         }
@@ -841,33 +644,33 @@ public class WikitudePlugin extends CordovaPlugin implements ArchitectJavaScript
     }
 
     /**
-     * add architectView to current screen
+     * add helloARRuption to current screen
      * @param apiKey developers's api key to use (hides watermarking/intro-animation if it matches your package-name)
      * @param filePath the url (starting with http:// for online use; starting with LOCAL_ASSETS_PATH_ROOT if oyu want to load assets within your app-assets folder)
      * @param features Augmented Reality mode ()
      * @throws IOException might be thrown from ARchitect-SDK
      */
     private void addArchitectView( final String apiKey, String filePath, int features, JSONObject startupConfiguration) throws IOException {
-        if ( this.architectView == null ) {
+        if ( this.helloARRuption == null ) {
 
-            WikitudePlugin.releaseFocusInCordovaWebView(cordova.getActivity().getWindow().getDecorView().findViewById(android.R.id.content));
+            RuptionARPlugin.releaseFocusInCordovaWebView(cordova.getActivity().getWindow().getDecorView().findViewById(android.R.id.content));
 
-            this.architectView = new ArchitectViewPhoneGap( this.cordova.getActivity() , new ArchitectViewPhoneGap.OnKeyUpDownListener() {
+            this.helloARRuption = new HelloARRuption( this.cordova.getActivity() , new HelloARRuption.OnKeyUpDownListener() {
 
                 @Override
                 public boolean onKeyUp(int keyCode, KeyEvent event) {
-                    if (architectView!=null && keyCode == KeyEvent.KEYCODE_BACK) {
-                        if (!loadFailed && architectView.webViewGoBack()) {
+                    if (helloARRuption!=null && keyCode == KeyEvent.KEYCODE_BACK) {
+                        if (!loadFailed && helloARRuption.webViewGoBack()) {
                             return false;
                         } else {
-                            if ( WikitudePlugin.this.onBackButtonCallback != null ) {
+                            if ( RuptionARPlugin.this.onBackButtonCallback != null ) {
                                 try {
                                     /* pass called url as String to callback-method */
                                     final PluginResult res = new PluginResult( PluginResult.Status.OK);
                                     res.setKeepCallback(true);
-                                    WikitudePlugin.this.onBackButtonCallback.sendPluginResult( res );
+                                    RuptionARPlugin.this.onBackButtonCallback.sendPluginResult( res );
                                 } catch ( Exception e ) {
-                                    WikitudePlugin.this.onBackButtonCallback.error( "onBackButton result could not be send." );
+                                    RuptionARPlugin.this.onBackButtonCallback.error( "onBackButton result could not be send." );
                                 }
                             }
                             return true;
@@ -879,12 +682,11 @@ public class WikitudePlugin extends CordovaPlugin implements ArchitectJavaScript
 
                 @Override
                 public boolean onKeyDown(int keyCode, KeyEvent event) {
-                    return architectView!=null && keyCode == KeyEvent.KEYCODE_BACK;
+                    return helloARRuption!=null && keyCode == KeyEvent.KEYCODE_BACK;
                 }
             });
 
-            this.architectView.setFocusableInTouchMode(true);
-            this.architectView.requestFocus();
+            this.helloARRuption.onWindowFocusChanged();
 
             this.locationListener = new LocationListener() {
 
@@ -899,48 +701,17 @@ public class WikitudePlugin extends CordovaPlugin implements ArchitectJavaScript
                 @Override
                 public void onProviderDisabled( String provider ) {
                 }
-
-                @Override
-                public void onLocationChanged( final Location location ) {
-                    if (location!=null && !WikitudePlugin.this.useCustomLocation) {
-                        WikitudePlugin.this.lastKnownLocaton = location;
-                        if ( WikitudePlugin.this.architectView != null ) {
-                            if ( location.hasAltitude() ) {
-                                WikitudePlugin.this.architectView.setLocation( location.getLatitude(), location.getLongitude(), location.getAltitude(), location.getAccuracy() );
-                            } else {
-                                WikitudePlugin.this.architectView.setLocation( location.getLatitude(), location.getLongitude(), location.getAccuracy() );
-                            }
-                        }
-                    }
-                }
             };
 
 			/* add content view and fake initial life-cycle */
-            (this.cordova.getActivity()).addContentView( this.architectView, new ViewGroup.LayoutParams( LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT ) );
+            (this.cordova.getActivity()).addContentView( this.helloARRuption, new ViewGroup.LayoutParams( LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT ) );
             (this.cordova.getActivity()).setVolumeControlStream( AudioManager.STREAM_MUSIC );
 
 			/* fake life-cycle calls, because activity is already up and running */
-            this.architectView.onCreate( getStartupConfiguration( apiKey, features, startupConfiguration ) );
-            this.architectView.onPostCreate();
-
-            /* add self as js interface listener to forward AR.platform to Cordova. */
-            this.architectView.addArchitectJavaScriptInterfaceListener( WikitudePlugin.this );
-
-            this.architectView.registerWorldLoadedListener( WikitudePlugin.this );
-
-			/* load asset from local directory if prefix is used */
-            if ( filePath.startsWith( WikitudePlugin.LOCAL_ASSETS_PATH_ROOT ) ) {
-                filePath = filePath.substring( WikitudePlugin.LOCAL_ASSETS_PATH_ROOT.length() );
-            }
-            this.architectView.load( filePath );
+            this.helloARRuption.onCreate( this.helloARRuption );
 
 			/* also a fake-life-cycle call (the last one before it is really shown in UI */
-            this.architectView.onResume();
-
-            if ((features & ArchitectStartupConfiguration.Features.Geo) == ArchitectStartupConfiguration.Features.Geo) {
-                this.locationProvider = new LocationProvider( this.cordova.getActivity(), this.locationListener );
-                this.locationProvider.onResume();
-            }
+            this.helloARRuption.onResume();
         }
 
         // hide keyboard when adding AR view on top of views
@@ -957,7 +728,7 @@ public class WikitudePlugin extends CordovaPlugin implements ArchitectJavaScript
         } else if (rootView instanceof ViewGroup) {
             final int childCount = ((ViewGroup)rootView).getChildCount();
             for (int i=0; i< childCount; i++) {
-                WikitudePlugin.releaseFocusInCordovaWebView(((ViewGroup)rootView).getChildAt(i));
+                RuptionARPlugin.releaseFocusInCordovaWebView(((ViewGroup)rootView).getChildAt(i));
             }
         }
     }
@@ -973,13 +744,13 @@ public class WikitudePlugin extends CordovaPlugin implements ArchitectJavaScript
         else if (rootView instanceof ViewGroup) {
             final int childCount = ((ViewGroup)rootView).getChildCount();
             for (int i=0; i< childCount; i++) {
-                WikitudePlugin.handleResumeInCordovaWebView(((ViewGroup)rootView).getChildAt(i));
+                RuptionARPlugin.handleResumeInCordovaWebView(((ViewGroup)rootView).getChildAt(i));
             }
         }
     }
 
 
-    protected static class ArchitectViewPhoneGap extends ArchitectView {
+    protected static class HelloARRuption extends HelloArActivity {
         public static interface OnKeyUpDownListener {
             public boolean onKeyDown(int keyCode, KeyEvent event);
 
@@ -989,12 +760,12 @@ public class WikitudePlugin extends CordovaPlugin implements ArchitectJavaScript
         private final OnKeyUpDownListener onKeyUpDownListener;
 
         @Deprecated
-        public ArchitectViewPhoneGap(Context context) {
+        public HelloARRuption(Context context) {
             super(context);
             this.onKeyUpDownListener = null;
         }
 
-        public ArchitectViewPhoneGap(Context context, OnKeyUpDownListener onKeyUpDownListener) {
+        public HelloARRuption(Context context, OnKeyUpDownListener onKeyUpDownListener) {
             super(context);
             this.onKeyUpDownListener = onKeyUpDownListener;
         }
@@ -1016,7 +787,7 @@ public class WikitudePlugin extends CordovaPlugin implements ArchitectJavaScript
                                       Rect previouslyFocusedRect) {
             super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
 
-            // ensure architectView does not loose focus on screen orientation changes etc.
+            // ensure helloARRuption does not loose focus on screen orientation changes etc.
             if (!gainFocus) {
                 this.requestFocus();
             }
@@ -1132,7 +903,7 @@ public class WikitudePlugin extends CordovaPlugin implements ArchitectJavaScript
             if (permission.equals(Manifest.permission.CAMERA)) {
                 if (grantResults.length > 0 && grantResults[i] == PackageManager.PERMISSION_GRANTED) {
                     if ((!_locationPermissionRequired || !_locationPermissionRequestRequired) && requestCode != REQUEST_ACCESS_REQUEST_CODE) {
-                        this.loadArchitectWorld();
+                        this.loadWorld();
                         break;
                     } else {
                         _cameraPermissionGranted = true;
@@ -1147,7 +918,7 @@ public class WikitudePlugin extends CordovaPlugin implements ArchitectJavaScript
             } else if (permission.equals(Manifest.permission.ACCESS_FINE_LOCATION) || permission.equals(Manifest.permission.ACCESS_COARSE_LOCATION)) {
                 if (grantResults.length > 0 && grantResults[i] == PackageManager.PERMISSION_GRANTED) {
                     if (_cameraPermissionGranted && requestCode != REQUEST_ACCESS_REQUEST_CODE) {
-                        this.loadArchitectWorld();
+                        this.loadWorld();
                         break;
                     } else {
                         _locationPermissionRequestRequired = false;
@@ -1206,7 +977,7 @@ public class WikitudePlugin extends CordovaPlugin implements ArchitectJavaScript
 
     private boolean captureScreen(final JSONArray args, final CallbackContext callContext)
     {
-        if (architectView != null)
+        if (helloARRuption != null)
         {
             int captureMode = ArchitectView.CaptureScreenCallback.CAPTURE_MODE_CAM_AND_WEBVIEW;
 
@@ -1233,7 +1004,7 @@ public class WikitudePlugin extends CordovaPlugin implements ArchitectJavaScript
 
             final String fileName = name;
 
-            architectView.captureScreen(captureMode, new CaptureScreenCallback()
+            helloARRuption.captureScreen(captureMode, new CaptureScreenCallback()
             {
                 @Override
                 public void onScreenCaptured(Bitmap screenCapture)
