@@ -81,16 +81,6 @@ public class RuptionARPlugin extends CordovaPlugin {
     private static final String	ACTION_CLOSE				= "close";
 
     /**
-     * set visibility of helloARRuption to visible (of present)
-     */
-    private static final String	ACTION_SHOW					= "show";
-
-    /**
-     * set visibility of helloARRuption to invisible (of present)
-     */
-    private static final String	ACTION_HIDE					= "hide";
-
-    /**
      * inject location information
      */
     private static final String	ACTION_SET_LOCATION			= "setLocation";

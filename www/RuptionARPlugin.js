@@ -39,7 +39,7 @@
      * @param {function} errorCallback A callback which is called if one or more permissions are not granted.
      * @param {function} requiredFeatures An array of strings describing which features of the Wikitude SDK are used so that the plugin can request access to those restricted APIs.
      */
-    WikitudePlugin.prototype.requestAccess = function(successCallback, errorCallback) {
+    RuptionARPlugin.prototype.requestAccess = function(successCallback, errorCallback) {
         cordova.exec(successCallback, errorCallback, "RuptionARPlugin", "requestAccess", []);
     };
 
@@ -51,21 +51,21 @@
      *	@param {String} 					architectWorldPath	The path to a local ARchitect world or to a ARchitect world on a server or your
 	 *  @param {String} 					worldPath			path to an ARchitect world, either on the device or on e.g. your Dropbox.
      *  @param {Array} 						requiredFeatures	augmented reality features: a flags mask for enabling/disabling
-     *                                  geographic location-based (WikitudePlugin.FeatureGeo) or image recognition-based (WikitudePlugin.FeatureImageTracking) tracking.
+     *                                  geographic location-based (RuptionARPlugin.FeatureGeo) or image recognition-based (RuptionARPlugin.FeatureImageTracking) tracking.
 	 *  @param {json object} (optional) startupConfiguration	represents the start-up configuration which may look like the following:
 	 *									{
-	 *                               		"cameraPosition": app.WikitudePlugin.CameraPositionBack,
+	 *                               		"cameraPosition": app.RuptionARPlugin.CameraPositionBack,
 	 *                                  	    	"*OptionalPlatform*": {
 	 *											"*optionalPlatformKey*": "*optionalPlatformValue*"
 	 *                                      	}
 	 *                               	}
 	 */
-	WikitudePlugin.prototype.loadWorld = function(successCallback, errorCallback, architectWorldPath, requiredFeatures, startupConfiguration) {
+	RuptionARPlugin.prototype.loadWorld = function(successCallback, errorCallback, architectWorldPath, requiredFeatures, startupConfiguration) {
 
 		cordova.exec(successCallback, errorCallback, "RuptionARPlugin", "open", []);
 
 		if (this.customBackButtonCallback == null) {
-            cordova.exec(this.onBackButton, this.onRuptionARError, "WikitudePlugin", "setBackButtonCallback", []);
+            cordova.exec(this.onBackButton, this.onRuptionARError, "RuptionARPlugin", "setBackButtonCallback", []);
 		}
 
 		// We add an event listener on the resume and pause event of the application life-cycle
@@ -78,76 +78,21 @@
 	/**
 	 *	Use this function to stop the Wikitude SDK and to remove it from the screen.
 	 */
-	WikitudePlugin.prototype.close = function() {
+	RuptionARPlugin.prototype.close = function() {
 
 		document.removeEventListener("pause", this.onPause, false);
 		document.removeEventListener("resume", this.onResume, false);
 		document.removeEventListener("backbutton", this.onBackButton, false);
 
-		cordova.exec(this.onWikitudeOK, this.onWikitudeError, "WikitudePlugin", "close", [""]);
+		cordova.exec(this.onRuptionAROK, this.onRuptionARError, "RuptionARPlugin", "close", [""]);
 	};
 
-	/**
-	 *	Use this function to only hide the Wikitude SDK. All location and rendering updates are still active.
-	 */
-	WikitudePlugin.prototype.hide = function() {
-		cordova.exec(this.onWikitudeOK, this.onWikitudeError, "WikitudePlugin", "hide", [""]);
-	};
-
-	/**
-	 *	Use this function to show the Wikitude SDK again if it was hidden before.
-	 */
-	WikitudePlugin.prototype.show = function() {
-		cordova.exec(this.onWikitudeOK, this.onWikitudeError, "WikitudePlugin", "show", [""]);
-	};
 
 	/* Interacting with the Wikitude SDK */
 
-	/**
-	 *	Use this function to call JavaScript which will be executed in the context of the currently loaded ARchitect World.
-	 *
-	 * @param js The JavaScript that should be evaluated in the ARchitect View.
-	 */
-	WikitudePlugin.prototype.callJavaScript = function(js) {
-		cordova.exec(this.onWikitudeOK, this.onWikitudeError, "WikitudePlugin", "callJavascript", [js]);
-	};
-
-    /**
-     *	Use this function to set a callback which will be invoked when the ARchitect World opens an architectsdk =// url.
-     *	document.location = "architectsdk =//opendetailpage?id=9";#
-     *	@param onUrlInvokeCallback A function which will be called when the ARchitect World invokes a call to "document.location = architectsdk =//"
-     *  @deprecated use setJSONObjectReceivedCallback instead
-     */
-	WikitudePlugin.prototype.setOnUrlInvokeCallback = function(onUrlInvokeCallback) {
-		cordova.exec(onUrlInvokeCallback, this.onWikitudeError, "WikitudePlugin", "onUrlInvoke", [""]);
-    };
 
 
-	/**
-	 *	Use this function to set a callback which will be invoked when AR.platform.sendJSONObject is called.
-	 *	e.g.:
-	 *  AR.platform.sendJSONObject({
-	 *      action: "opendetailpage",
-	 *      id: 9
-	 *  });
-	 *
-	 *	@param onJSONObjectReceived A function which will be called when AR.platform.sendJSONObject is called.
-	 */
-	WikitudePlugin.prototype.setJSONObjectReceivedCallback = function(onJSONObjectReceived) {
-		cordova.exec(onJSONObjectReceived, this.onWikitudeError, "WikitudePlugin", "onJSONObjectReceived", [""]);
-	};
 
-	/**
-	 *  Use this function to inject a location into the Wikitude SDK.
-	 *
-	 *  @param latitude The latitude which should be simulated
-	 *  @param longitude The longitude which should be simulated
-	 *  @param altitude The altitude which should be simulated
-	 *  @param accuracy The simulated location accuracy
-	 */
-	WikitudePlugin.prototype.setLocation = function(latitude, longitude, altitude, accuracy) {
-		cordova.exec(this.onWikitudeOK, this.onWikitudeError, "WikitudePlugin", "setLocation", [latitude, longitude, altitude, accuracy]);
-	};
 
 	/**
 	 *  Use this function to generate a screenshot from the current Wikitude SDK view.
@@ -157,9 +102,9 @@
 	 *  @param includeWebView Indicates if the ARchitect web view should be included in the generated screenshot or not.
 	 *  @param imagePathInBundleorNullForPhotoLibrary If a file path or file name is given, the generated screenshot will be saved in the application bundle. Passing null will save the photo in the device photo library.
 	 */
-	WikitudePlugin.prototype.captureScreen = function(successCallback, errorCallback, includeWebView, imagePathInBundleOrNullForPhotoLibrary)
+	RuptionARPlugin.prototype.captureScreen = function(successCallback, errorCallback, includeWebView, imagePathInBundleOrNullForPhotoLibrary)
     {
-		cordova.exec(successCallback, errorCallback, "WikitudePlugin", "captureScreen", [includeWebView, imagePathInBundleOrNullForPhotoLibrary]);
+		cordova.exec(successCallback, errorCallback, "RuptionARPlugin", "captureScreen", [includeWebView, imagePathInBundleOrNullForPhotoLibrary]);
 	};
 
 	/**
@@ -171,34 +116,11 @@
 	 *
 	 * NOTE: The errorHandler is currently only called by the Wikitude iOS SDK!
 	 */
-	WikitudePlugin.prototype.setErrorHandler = function(errorHandler)
+	RuptionARPlugin.prototype.setErrorHandler = function(errorHandler)
 	{
-		cordova.exec(this.onWikitudeOK, errorHandler, "WikitudePlugin", "setErrorHandler", []);
+		cordova.exec(this.onRuptionAROK, errorHandler, "RuptionARPlugin", "setErrorHandler", []);
 	}
 
-	/**
-	 * Use this function to set a callback that is called every time the iOS SDK need to calibrate device sensors.
-	 *
-	 * @param {function()} startCalibrationHandler function which is called every time the iOS SDK would like to calibrate device sensors.
-	 *
-	 * Note: The startCalibrationHandler is currently only called by the Wikitude iOS Cordova Plugin!
-	 */
-	WikitudePlugin.prototype.setDeviceSensorsNeedCalibrationHandler = function(startCalibrationHandler)
-	{
-		cordova.exec(startCalibrationHandler, this.onWikitudeError(), "WikitudePlugin", "setDeviceSensorsNeedCalibrationHandler", []);
-	}
-
-    /**
-     * Use this function to set a callback that is called every time the iOS SDK finished device sensor calibration.
-     *
-     * @param {function()} finishedCalibrationHandler function which is called every time the iOS SDK finished calibrating device sensors.
-     *
-     * Note: The finishedCalibrationHandler is currently only called by the Wikitude iOS Cordova Plugin!
-     */
-    WikitudePlugin.prototype.setDeviceSensorsFinishedCalibrationHandler = function(finishedCalibrationHandler)
-    {
-        cordova.exec(finishedCalibrationHandler, this.onWikitudeError(), "WikitudePlugin", "setDeviceSensorsFinishedCalibrationHandler", []);
-    }
 
 	/**
 	 * Use this function to set a callback that is called every time the back button is pressed while the Wikitude Cordova Plugin is presented.
@@ -207,38 +129,21 @@
 	 *
 	 * Note: The function is only implemented for Android!
 	 */
-	WikitudePlugin.prototype.setBackButtonCallback = function(onBackButtonCallback)
+	RuptionARPlugin.prototype.setBackButtonCallback = function(onBackButtonCallback)
 	{
 		this.customBackButtonCallback = function() {
 			onBackButtonCallback();
-			WikitudePlugin.prototype.close();
+			RuptionARPlugin.prototype.close();
 		}
-		cordova.exec(this.customBackButtonCallback, this.onWikitudeError, "WikitudePlugin", "setBackButtonCallback", []);
+		cordova.exec(this.customBackButtonCallback, this.onRuptionARError, "RuptionARPlugin", "setBackButtonCallback", []);
 	}
 
-	/**
-	 *  Use this function to get information about the sdk build.
-	 *
-	 * @param {function} successCallback A callback which is called when the build information could be laoded.
-	 */
-	WikitudePlugin.prototype.getSDKBuildInformation = function(successCallback) {
-	    cordova.exec(successCallback, this.onWikitudeError, "WikitudePlugin", "getSDKBuildInformation", [""])
-	}
-
-	/**
-	 *  Use this function to get the version of the sdk.
-	 *
-	 * @param {function} successCallback A callback which is called when the sdk version could be loaded.
-	 */
-	WikitudePlugin.prototype.getSDKVersion = function(successCallback) {
-	    cordova.exec(successCallback, this.onWikitudeError, "WikitudePlugin", "getSDKVersion", [""])
-	}
 	
     /**
      * Use this function to open the application specific system setting view.
      */
-	WikitudePlugin.prototype.openAppSettings = function() {
-    	cordova.exec(this.onWikitudeOK, this.onWikitudeError, "WikitudePlugin", "openAppSettings", []);
+	RuptionARPlugin.prototype.openAppSettings = function() {
+    	cordova.exec(this.onRuptionAROK, this.onRuptionARError, "RuptionARPlugin", "openAppSettings", []);
 	}
 
 	/**
@@ -246,8 +151,8 @@
 	 *
 	 * @param alertString The message to display in the alert.
 	 */
-	WikitudePlugin.prototype.showAlert = function(alertString) {
-		cordova.exec(this.onWikitudeOK, this.onWikitudeError, "WikitudePlugin", "showAlert", [alertString]);
+	RuptionARPlugin.prototype.showAlert = function(alertString) {
+		cordova.exec(this.onRuptionAROK, this.onRuptionARError, "RuptionARPlugin", "showAlert", [alertString]);
 	};
 
 	/*
@@ -263,46 +168,46 @@
 	/**
 	 *	This function gets called every time the application did become active.
 	 */
-	WikitudePlugin.prototype.onResume = function() {
+	RuptionARPlugin.prototype.onResume = function() {
 
 		// Call the Wikitude SDK that it should resume.
-		cordova.exec(this.onWikitudeOK, this.onWikitudeError, "WikitudePlugin", "onResume", [""]);
+		cordova.exec(this.onRuptionAROK, this.onRuptionARError, "RuptionARPlugin", "onResume", [""]);
 	};
 
 	/* Lifecycle updates */
 	/**
 	 *	This function gets called when the application goes back to main
 	 */
-	WikitudePlugin.prototype.onBackButton = function() {
+	RuptionARPlugin.prototype.onBackButton = function() {
 
 		// Call the Wikitude SDK that it should resume.
-		//cordova.exec(this.onWikitudeOK, this.onWikitudeError, "WikitudePlugin", "close", [""]);
+		//cordova.exec(this.onRuptionAROK, this.onRuptionARError, "RuptionARPlugin", "close", [""]);
 		if (this.customBackButtonCallback != null) {
 			this.customBackButtonCallback();
 		}
 		else {
-			WikitudePlugin.prototype.close();
+			RuptionARPlugin.prototype.close();
 		}
 	};
 
 	/**
 	 *	This function gets called every time the application is about to become inactive.
 	 */
-	WikitudePlugin.prototype.onPause = function() {
+	RuptionARPlugin.prototype.onPause = function() {
 
 		// Call the Wikitude SDK that the application did become inactive
-		cordova.exec(this.onWikitudeOK, this.onWikitudeError, "WikitudePlugin", "onPause", [""]);
+		cordova.exec(this.onRuptionAROK, this.onRuptionARError, "RuptionARPlugin", "onPause", [""]);
 	};
 
 	/**
 	 *	A generic success callback used inside this wrapper.
 	 */
-	WikitudePlugin.prototype.onRuptionAROK = function() {};
+	RuptionARPlugin.prototype.onRuptionAROK = function() {};
 
 	/**
 	 *  A generic error callback used inside this wrapper.
 	 */
-	WikitudePlugin.prototype.onRuptionARError = function() {};
+	RuptionARPlugin.prototype.onRuptionARError = function() {};
 
 
 
@@ -311,11 +216,11 @@
 	module.exports = wikitudePlugin;*/
 
 	// Installation constructor that binds WkitudePlugin to window
-	WikitudePlugin.install = function () {
+	RuptionARPlugin.install = function () {
 		if (!window.plugins) {
 			window.plugins = {};
 		}
-		window.plugins.wikitudePlugin = new WikitudePlugin();
-		return window.plugins.wikitudePlugin;
+		window.plugins.ruptionARPlugin = new RuptionARPlugin();
+		return window.plugins.ruptionARPlugin;
 	};
-	cordova.addConstructor(WikitudePlugin.install);
+	cordova.addConstructor(RuptionARPlugin.install);
