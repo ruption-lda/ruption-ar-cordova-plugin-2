@@ -386,17 +386,9 @@ public class RuptionARPlugin extends CordovaPlugin {
                 this.cordova.requestPermissions(this, CAMERA_PERMISSION_REQUEST_CODE, new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION});
             } else {
                 loadWorld();
+                changeSurface(1, 1);
+                drawFrame();
             }
-            return true;
-        }
-
-        if ( RuptionARPlugin.GET_SDK_BUILD_INFORMATION.equals( action ) ) {
-            callContext.success(ArchitectView.getSDKBuildInformation().toJSONString());
-            return true;
-        }
-
-        if ( RuptionARPlugin.GET_SDK_VERSION.equals( action ) ) {
-            callContext.success(ArchitectView.getSDKVersion());
             return true;
         }
 
@@ -444,7 +436,7 @@ public class RuptionARPlugin extends CordovaPlugin {
                 @Override
                 public void run() {
                     try {
-                        RuptionARPlugin.this.addArchitectView( apiKey, filePath, features, startupConfiguration );
+                        RuptionARPlugin.this.onSurfaceCreated( RuptionARPlugin.this.render );
                     } catch ( Exception e ) {
 							/* in case "addArchitectView" threw an exception -> notify callback method asynchronously */
                         openCallback.error( e != null ? e.getMessage() : "Exception is 'null'" );
@@ -464,43 +456,12 @@ public class RuptionARPlugin extends CordovaPlugin {
         this.openCallback.sendPluginResult(result);
     }
 
-    /**
-     * Triggered when AR.platform.sendJSONObject is called. (e.g. AR.platform.sendJSONObject({foo:"bar"}))
-     * @param jsonObject the sent jsonObject
-     */
-    @Override
-    public void onJSONObjectReceived(JSONObject jsonObject) {
-        /* call callback-method if set*/
-        if ( this.jsonObjectReceivedCallback != null ) {
-            /* pass called url as String to callback-method */
-            final PluginResult res = new PluginResult( PluginResult.Status.OK, jsonObject );
-            res.setKeepCallback( true );
-            this.jsonObjectReceivedCallback.sendPluginResult( res );
-        }
+    private void changeSurface(int width, int height) {
+        RuptionARPlugin.this.onSurfaceChanged(RuptionARPlugin.this.render, width, height);
     }
 
-    @Override
-    public void worldWasLoaded(String url) {
-        loadFailed = false;
-        if ( this.openCallback != null ) {
-            try {
-                if ( !url.startsWith("data:text") ) {
-                    final PluginResult res = new PluginResult( PluginResult.Status.OK, url );
-                    res.setKeepCallback( true );
-                    this.openCallback.sendPluginResult( res );
-                }
-            } catch ( Exception e ) { }
-        }
-    }
-
-    @Override
-    public void worldLoadFailed(int errorCode, String description, String failingUrl) {
-        loadFailed = true;
-        if ( this.openCallback != null ) {
-            try {
-                this.openCallback.error( "Failed to load Architect World. " + description + ". Url: " + failingUrl );
-            } catch ( Exception e ) { }
-        }
+    private void drawFrame() {
+        RuptionARPlugin.this.onDrawFrame(RuptionARPlugin.this.render);
     }
 
     /**
@@ -523,125 +484,6 @@ public class RuptionARPlugin extends CordovaPlugin {
     }
 
 
-    private static int clearCacheFolder( final File dir, final int numDays ) {
-
-        int deletedFiles = 0;
-        if ( dir != null && dir.isDirectory() ) {
-            try {
-                for ( File child : dir.listFiles() ) {
-
-                    //first delete subdirectories recursively
-                    if ( child.isDirectory() ) {
-                        deletedFiles += clearCacheFolder( child, numDays );
-                    }
-
-                    //then delete the files and subdirectories in this dir
-                    //only empty directories can be deleted, so subdirs have been done first
-                    if ( child.lastModified() < new Date().getTime() - numDays * DateUtils.DAY_IN_MILLIS ) {
-                        if ( child.delete() ) {
-                            deletedFiles++;
-                        }
-                    }
-                }
-            } catch ( Exception e ) {
-                e.printStackTrace();
-            }
-        }
-        return deletedFiles;
-    }
-
-    private int convertArFeatures(JSONArray jsonArray) {
-        int featuresBitMap = 0;
-        for (int i = 0; i < jsonArray.length(); i++) {
-            String feature = "";
-            try {
-                feature = (String) jsonArray.get(i);
-            } catch (JSONException e) {
-            }
-            if (feature.equalsIgnoreCase("image_tracking")) {
-                featuresBitMap = featuresBitMap | ArchitectStartupConfiguration.Features.ImageTracking;
-            } else if (feature.equalsIgnoreCase("geo")) {
-                featuresBitMap = featuresBitMap | ArchitectStartupConfiguration.Features.Geo;
-            } else if (feature.equalsIgnoreCase("instant_tracking")) {
-                featuresBitMap = featuresBitMap | ArchitectStartupConfiguration.Features.InstantTracking;
-            } else if (feature.equalsIgnoreCase("object_tracking")) {
-                featuresBitMap = featuresBitMap | ArchitectStartupConfiguration.Features.ObjectTracking;
-            }
-        }
-        if (featuresBitMap == 0) {
-            featuresBitMap = ArchitectStartupConfiguration.Features.ImageTracking | ArchitectStartupConfiguration.Features.Geo | ArchitectStartupConfiguration.Features.InstantTracking | ArchitectStartupConfiguration.Features.ObjectTracking;
-        }
-        return featuresBitMap;
-    }
-
-    /**
-     * Architect-Configuration required for proper set-up
-     * @param apiKey
-     * @param features
-     * @return
-     */
-    protected ArchitectStartupConfiguration getStartupConfiguration( final String apiKey, int features, JSONObject startupConfiguration ) {
-
-        ArchitectStartupConfiguration config = new ArchitectStartupConfiguration();
-        config.setLicenseKey(apiKey);
-        config.setFeatures(features);
-        config.setOrigin( ArchitectStartupConfiguration.ORIGIN_PHONEGAP );
-
-        if (startupConfiguration != null) {
-            try {
-                if (startupConfiguration.getString("camera_position").compareToIgnoreCase("front") == 0) {
-                    config.setCameraPosition(CameraSettings.CameraPosition.FRONT);
-                } else if (startupConfiguration.getString("camera_position").compareToIgnoreCase("back") == 0) {
-                    config.setCameraPosition(CameraSettings.CameraPosition.BACK);
-                }
-            } catch (JSONException e) {
-            }
-
-            try {
-                if (startupConfiguration.getString("camera_focus_mode").compareToIgnoreCase("once") == 0) {
-                    config.setCameraFocusMode(CameraSettings.CameraFocusMode.ONCE);
-                } else if (startupConfiguration.getString("camera_focus_mode").compareToIgnoreCase("continuous") == 0) {
-                    config.setCameraFocusMode(CameraSettings.CameraFocusMode.CONTINUOUS);
-                } else if (startupConfiguration.getString("camera_focus_mode").compareToIgnoreCase("off") == 0) {
-                    config.setCameraFocusMode(CameraSettings.CameraFocusMode.OFF);
-                }
-            } catch (JSONException e) {
-            }
-
-            try {
-                config.setCameraManualFocusDistance((float)startupConfiguration.getDouble("camera_manual_focus_distance"));
-            } catch (JSONException e) {
-            }
-
-            try {
-                String cameraResolution;
-                if (null != (cameraResolution = startupConfiguration.getString("camera_resolution"))) {
-                    cameraResolution = cameraResolution.toLowerCase();
-                    CameraSettings.CameraResolution cameraResolutionMode;
-                    if ("sd_640x480".equals(cameraResolution) || "640x480".equals(cameraResolution) || "sd".equals(cameraResolution)) {
-                        cameraResolutionMode = CameraSettings.CameraResolution.SD_640x480;
-                    } else if ("hd_1280x720".equals(cameraResolution) || "1280x720".equals(cameraResolution) || "hd".equals(cameraResolution)) {
-                        cameraResolutionMode = CameraSettings.CameraResolution.HD_1280x720;
-                    } else if ("full_hd_1920x1080".equals(cameraResolution) || "1920x1080".equals(cameraResolution) || "full_hd".equals(cameraResolution)) {
-                        cameraResolutionMode = CameraSettings.CameraResolution.FULL_HD_1920x1080;
-                    } else if ("auto".equals(cameraResolution)) {
-                        cameraResolutionMode = CameraSettings.CameraResolution.AUTO;
-                    } else {
-                        cameraResolutionMode = CameraSettings.CameraResolution.SD_640x480;
-                    }
-                    config.setCameraResolution(cameraResolutionMode);
-                }
-            } catch (JSONException e) {
-            }
-
-            try {
-                config.setCamera2Enabled(startupConfiguration.getBoolean("camera2_enabled"));
-            } catch (JSONException e) {
-            }
-        }
-
-        return config;
-    }
 
     /**
      * add helloARRuption to current screen
@@ -650,7 +492,7 @@ public class RuptionARPlugin extends CordovaPlugin {
      * @param features Augmented Reality mode ()
      * @throws IOException might be thrown from ARchitect-SDK
      */
-    private void addArchitectView( final String apiKey, String filePath, int features, JSONObject startupConfiguration) throws IOException {
+    private void addHelloARRuption() throws IOException {
         if ( this.helloARRuption == null ) {
 
             RuptionARPlugin.releaseFocusInCordovaWebView(cordova.getActivity().getWindow().getDecorView().findViewById(android.R.id.content));
